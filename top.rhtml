@@ -16,11 +16,28 @@
 <div class="form">
 <form action="<%=h @cgi.script_name %>" method="get">
 <div>
-<input type="text" name="q" value="" size="60"/>
+<input type="text" name="q" value="<%=h q %>" size="60"/>
 <input type="submit" value="  著 者 検 索  "/>
 </div>
 </form>
 </div>
+<% if result %>
+<% count = 0 %>
+<ol>
+<%=h p result %>
+<% result[ "photos" ] and result[ "photos" ].each do |photo| %>
+  <% if not photo[ "tags" ].empty? %>
+  <li>
+      <%=h photo %>
+  </li>
+<% count += 1 %>
+  <% end %>
+<% end %>
+</ol>
+<% end %>
+<% if count == 0 %>
+<p>Not found. Try another search...</p>
+<% end %>
 <hr />
 <div id="footer">
 <address>高久雅生 (Masao Takaku)<br />

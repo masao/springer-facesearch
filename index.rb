@@ -35,6 +35,24 @@ def http_get( uri )
    end
 end
 
+def http_post( uri, data )
+   http = Net::HTTP.new( uri.host, uri.port )
+   http.start do |http|
+      response, = http.post( uri.request_uri, data,
+                             { 'User-Agent'=>USER_AGENT } )
+      case response
+      when Net::HTTPSuccess
+         response
+      when Net::HTTPRedirection
+         redirect_uri = URI.parse( response['Location'] )
+         STDERR.puts "redirect to #{ redirect_uri } (#{limit})"
+         http_get( uri + redirect_uri, limit - 1 )
+      else
+         response.error!
+      end
+   end
+end
+
 # Springer Image API
 ## cf. http://dev.springer.com/docs
 def springer_images_search( keyword, opts = {} )
@@ -66,9 +84,14 @@ def springer_images_search( keyword, opts = {} )
 end
 
 def face_detect( url_list )
-   urls = url_list.join( "," )
-   uri = URI.parse( "http://api.face.com/faces/detect.json?api_key=7326a34beadd71c1a8fcab9e61c9dc8b&api_secret=e30c097912d2f77a15f791e15e0564e9&urls=#{ URI.escape urls }&detector=Normal" )
-   response = http_get( uri )
+   urls = url_list[0,30].join( "," )
+   uri = URI.parse( "http://api.face.com/faces/detect.json" )
+   data = { "api_key" => "7326a34beadd71c1a8fcab9e61c9dc8b",
+            "api_secret" => "e30c097912d2f77a15f791e15e0564e9",
+	    "urls" => URI.escape( urls ),
+	    "detector" => "Normal",
+	  }
+   response = http_post( uri, data )
    json = response.body
    JSON.load( json )
 end
@@ -76,11 +99,13 @@ end
 if $0 == __FILE__
    @cgi = CGI.new
    q = nil
+   result = []
    if @cgi.params["q"] and @cgi.params["q"][0] and not @cgi.params["q"][0].empty?
-      q = @cgi.params["q"]
-      files = springer_images_search( ARGV[0] )
-      urls = files.map{|e| e[:thumb] }.join(",")
-      faceapi_url = "http://api.face.com/faces/detect.json?api_key=4b4b4c6d54c37&api_secret=&urls=#{ URI.escape urls }&detector=Normal"
+      q = @cgi.params["q"][0]
+      files = springer_images_search( q, { :p => 50 } )
+      #p files
+      urls = files.map{|e| e[:thumb] }
+      result = face_detect( urls )
    end
    include ERB::Util
    rhtml = open( "top.rhtml" ){|io| io.read }
