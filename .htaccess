@@ -1,0 +1,3 @@
+AddHandler cgi-script .rb
+AddHandler cgi-script .cgi
+Options -Indexes

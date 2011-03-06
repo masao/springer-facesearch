@@ -1,0 +1,25 @@
+body {
+  /* ref:http://www.colordic.org/colorsample/2173.html */
+  background-color: #f57;
+  padding: 0 1%;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+div.last-update {
+  text-align: right;
+  font-size: smaller;
+}
+#footer {
+  font-size: smaller;
+  text-align: right;
+}
+h1 {
+  text-align: center;
+  margin-top: 10px;
+}
+.form {
+  margin-left: 5em;
+  margin-right: 5em;
+}
+.form input {
+  font-size: larger;
+}

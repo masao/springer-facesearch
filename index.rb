@@ -15,6 +15,9 @@ USER_AGENT = "Springer/Facesearch"
 SPRINGER_IMAGES_APIKEY = "uwud8n4tbkmr4bqw6zfq8ab8"
 SPRINGER_INTERVAL = 0.5
 
+VERSION = "0.1"
+TITLE = "Springer Face Search"
+
 def http_get( uri )
    http = Net::HTTP.new( uri.host, uri.port )
    http.start do |http|
@@ -71,7 +74,16 @@ def face_detect( url_list )
 end
 
 if $0 == __FILE__
-   files = springer_images_search( ARGV[0] )
-   urls = files.map{|e| e[:thumb] }.join(",")
-   faceapi_url = "http://api.face.com/faces/detect.json?api_key=4b4b4c6d54c37&api_secret=&urls=#{ URI.escape urls }&detector=Normal"
+   @cgi = CGI.new
+   q = nil
+   if @cgi.params["q"] and @cgi.params["q"][0] and not @cgi.params["q"][0].empty?
+      q = @cgi.params["q"]
+      files = springer_images_search( ARGV[0] )
+      urls = files.map{|e| e[:thumb] }.join(",")
+      faceapi_url = "http://api.face.com/faces/detect.json?api_key=4b4b4c6d54c37&api_secret=&urls=#{ URI.escape urls }&detector=Normal"
+   end
+   include ERB::Util
+   rhtml = open( "top.rhtml" ){|io| io.read }
+   print @cgi.header( "text/html; charset=utf-8" )
+   print ERB::new( rhtml, $SAFE, "<>" ).result( binding )
 end
