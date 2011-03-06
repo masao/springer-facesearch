@@ -23,17 +23,18 @@
 </div>
 <% if result %>
 <% count = 0 %>
-<ol>
-<%=h p result %>
+<div class="photos">
 <% result[ "photos" ] and result[ "photos" ].each do |photo| %>
   <% if not photo[ "tags" ].empty? %>
-  <li>
-      <%=h photo %>
-  </li>
-<% count += 1 %>
+  <div class="photo">
+  <% else %>
+  <div>
   <% end %>
+  <a href="<%=h photo["url"] %>"><img src="<%=h photo["url"] %>"/></a>
+  </div>
+<% count += 1 %>
 <% end %>
-</ol>
+</div>
 <% end %>
 <% if count == 0 %>
 <p>Not found. Try another search...</p>

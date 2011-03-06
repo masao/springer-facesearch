@@ -23,3 +23,14 @@ h1 {
 .form input {
   font-size: larger;
 }
+
+div.photos div {
+float: left;
+margin: 2px;
+}
+hr {
+clear:both;
+}
+div.photos div.photo {
+border: solid pink 10px;
+}

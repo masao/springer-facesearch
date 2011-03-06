@@ -91,7 +91,10 @@ def face_detect( url_list )
 	    "urls" => URI.escape( urls ),
 	    "detector" => "Normal",
 	  }
-   response = http_post( uri, data )
+   param = data.map{|k,v| "#{k}=#{v}" }.join("&")
+   uri.query = param
+   p uri.to_s
+   response = http_get( uri )
    json = response.body
    JSON.load( json )
 end
