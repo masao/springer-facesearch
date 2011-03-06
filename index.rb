@@ -62,6 +62,14 @@ def springer_images_search( keyword, opts = {} )
    files
 end
 
+def face_detect( url_list )
+   urls = url_list.join( "," )
+   uri = URI.parse( "http://api.face.com/faces/detect.json?api_key=7326a34beadd71c1a8fcab9e61c9dc8b&api_secret=e30c097912d2f77a15f791e15e0564e9&urls=#{ URI.escape urls }&detector=Normal" )
+   response = http_get( uri )
+   json = response.body
+   JSON.load( json )
+end
+
 if $0 == __FILE__
    files = springer_images_search( ARGV[0] )
    urls = files.map{|e| e[:thumb] }.join(",")
