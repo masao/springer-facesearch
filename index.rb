@@ -48,16 +48,22 @@ def springer_images_search( keyword, opts = {} )
    cont = response.body
    parser = LibXML::XML::Parser.string( cont )
    doc = parser.parse
-   records = doc.find( "//records/record/Image/File/Path[@Type='thumb']" )
+   records = doc.find( "//records/record/Image" )
+   files = []
    if records
-      image_urls = records.map{|e|
-         e.content
-         #p e
-      }.join( "," )
+      image_urls = records.each do |e|
+         files << {
+            :caption => e.find( "./Caption" )[0].content,
+            :thumb   => e.find( "./File/Path[@Type='thumb']" )[0].content,
+            :url     => e.find( "./Location" )[0].content,
+         }
+      end
    end
-   image_urls
+   files
 end
 
 if $0 == __FILE__
-   #http://api.face.com/faces/detect.json?api_key=4b4b4c6d54c37&api_secret=&urls=http://c0000571.cdn2.cloudfiles.rackspacecloud.com/Springer/JOU=11276/VOL=2010.16/ISU=2/ART=2008_131/MediaObjects/THUMB_11276_2008_131_Figa_HTML.jpg&detector=Normal&
+   files = springer_images_search( ARGV[0] )
+   urls = files.map{|e| e[:thumb] }.join(",")
+   faceapi_url = "http://api.face.com/faces/detect.json?api_key=4b4b4c6d54c37&api_secret=&urls=#{ URI.escape urls }&detector=Normal"
 end
