@@ -93,7 +93,7 @@ def face_detect( url_list )
 	  }
    param = data.map{|k,v| "#{k}=#{v}" }.join("&")
    uri.query = param
-   p uri.to_s
+   #p uri.to_s
    response = http_get( uri )
    json = response.body
    JSON.load( json )

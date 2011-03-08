@@ -21,7 +21,7 @@
 </div>
 </form>
 </div>
-<% if result %>
+<% if result and not result.empty? %>
 <% count = 0 %>
 <div class="photos">
 <% result[ "photos" ] and result[ "photos" ].each do |photo| %>
@@ -30,7 +30,8 @@
   <% else %>
   <div>
   <% end %>
-  <a href="<%=h photo["url"] %>"><img src="<%=h photo["url"] %>"/></a>
+  <% file = files.find{|e| e[:thumb] == photo["url"] } %>
+  <a href="<%=h file[:url] %>"><img src="<%=h photo["url"] %>"/></a>
   </div>
 <% count += 1 %>
 <% end %>
